@@ -21,11 +21,18 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getUser = async (req, res, next) => {
     try {
-        const users = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found"
+            });
+        }
 
         res.status(200).json({
             success: true,
-            data: users
+            data: user
         });
     } catch (err) {
         res.status(400).json({
@@ -51,17 +58,14 @@ exports.createUser = async (req, res, next) => {
 
 exports.deleteuser = async (req, res, next) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findByIdAndRemove(req.params.id);
 
-        if (!user) { 
+        if (!user) {
             return res.status(400).json({
                 success: false,
                 message: 'User not found'
             });
         }
-
-
-        await user.remove();
 
         res.status(200).json({
             success: true,
